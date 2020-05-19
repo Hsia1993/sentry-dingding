@@ -8,7 +8,6 @@ from sentry.plugins.bases.notify import NotificationPlugin
 import sentry_dingding
 from .forms import DingDingOptionsForm
 
-DingTalk_API = "https://oapi.dingtalk.com/robot/send?access_token={token}"
 
 
 class DingDingPlugin(NotificationPlugin):
@@ -35,7 +34,7 @@ class DingDingPlugin(NotificationPlugin):
         """
         Check if plugin is configured.
         """
-        return bool(self.get_option('access_token', project))
+        return bool(self.get_option('send_url', project))
 
     def notify_users(self, group, event, *args, **kwargs):
         self.post_process(group, event, *args, **kwargs)
@@ -50,8 +49,7 @@ class DingDingPlugin(NotificationPlugin):
         if group.is_ignored():
             return
 
-        access_token = self.get_option('access_token', group.project)
-        send_url = DingTalk_API.format(token=access_token)
+        send_url = self.get_option('send_url', group.project)
         title = u"New alert from {}".format(event.project.slug)
 
         data = {
